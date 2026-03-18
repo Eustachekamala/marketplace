@@ -6,7 +6,7 @@ class Product {
   final double price;
   final String? description;
   final String? imageUrl;
-  final String userId;
+  final String? userId;
   final DateTime createdAt;
 
   Product({
@@ -14,7 +14,9 @@ class Product {
     required this.name,
     required this.price,
     this.description,
-    this.imageUrl, required this.userId, required this.createdAt,
+    this.imageUrl, 
+    this.userId, 
+    required this.createdAt,
   });
 
   // Convert a map to a Product object
@@ -22,11 +24,11 @@ class Product {
     return Product(
       id: map['id'] as String,
       name: map['name'] as String,
-      price: map['price'] as double,
+      price: (map['price'] as num).toDouble(),
       description: map['description'] as String?,
-      imageUrl: map['imageUrl'] as String?,
-      userId: map['userId'] as String,
-      createdAt: DateTime.parse(map['createdAt'] as String),
+      imageUrl: map['image_url'] as String?,
+      userId: map['user_id'] as String?,
+      createdAt: DateTime.parse(map['created_at'] as String),
     );
   }
 
@@ -36,11 +38,11 @@ class Product {
       'name': name,
       'price': price,
       'description': description,
-      'imageUrl': imageUrl,
+      'image_url': imageUrl,
       'user_id': supabase.auth.currentUser!.id,
     };
   }
 
   // check the owner
-  bool get isOwner => userId == supabase.auth.currentUser!.id;
+  bool get isOwner => userId == supabase.auth.currentUser?.id;
 }

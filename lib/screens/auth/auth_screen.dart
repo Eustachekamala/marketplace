@@ -12,13 +12,28 @@ class AuthScreen extends StatefulWidget {
 class _AuthScreenState extends State<AuthScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  bool _obscureText = true;
+  final TextEditingController _confirmPasswordController = TextEditingController();
+
+  bool _passwordObscureText = true;
+  bool _confirmPasswordObscureText = true;
   bool _isSignUp = false;
   bool isLoading = false;
 
   void _submit() async {
     final email = _emailController.text;
     final password = _passwordController.text;
+    final confirmPassword = _confirmPasswordController.text;
+
+    // check if password and confirm password match
+    if (_isSignUp && password != confirmPassword) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Passwords do not match'),
+          duration: Duration(seconds: 2),
+        ),
+      );
+      return;
+    }
 
     setState(() {
       isLoading = true;
@@ -93,7 +108,7 @@ class _AuthScreenState extends State<AuthScreen> {
               ),
               const SizedBox(height: 20),
               TextField(
-                obscureText: _obscureText,
+                obscureText: _passwordObscureText,
                 controller: _passwordController,
                 decoration: InputDecoration(
                   labelText: 'Password',
@@ -101,16 +116,37 @@ class _AuthScreenState extends State<AuthScreen> {
                   suffixIcon: IconButton(
                     onPressed: () {
                       setState(() {
-                        _obscureText = !_obscureText;
+                        _passwordObscureText = !_passwordObscureText;
                       });
                     }, 
-                    icon: _obscureText
+                    icon: _passwordObscureText
                         ? const Icon(Icons.visibility_off)
                         : const Icon(Icons.visibility),
                   ),
                   border: const OutlineInputBorder(),
                 ),
               ),
+              const SizedBox(height:  20),
+              _isSignUp ? 
+              TextField(
+                  obscureText: _confirmPasswordObscureText,
+                  controller: _confirmPasswordController,
+                  decoration: InputDecoration(
+                  labelText: 'Confirm Password',
+                  prefixIcon: const Icon(Icons.lock),
+                  suffixIcon: IconButton(
+                    onPressed: () {
+                      setState(() {
+                        _confirmPasswordObscureText = !_confirmPasswordObscureText;
+                      });
+                    }, 
+                    icon: _confirmPasswordObscureText
+                        ? const Icon(Icons.visibility_off)
+                        : const Icon(Icons.visibility),
+                  ),
+                  border: const OutlineInputBorder(),
+                ),
+              ) : 
               const SizedBox(height: 20),
               FilledButton(
                 onPressed: isLoading ? null : _submit,
@@ -125,7 +161,7 @@ class _AuthScreenState extends State<AuthScreen> {
                       )
                     : Text(_isSignUp ? 'Sign Up' : 'Sign In'),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 10),
 
               // Toggle sign in / sign up
               TextButton(
